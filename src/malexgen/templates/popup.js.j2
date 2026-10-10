@@ -1,0 +1,15 @@
+
+console.log('[DEMO] Popup loaded: {{ legend.name }}');
+
+{{ payload_popup_js }}
+
+// Общие обработчики для попапа
+document.addEventListener('DOMContentLoaded', () => {
+    // Переключатели
+    const toggles = document.querySelectorAll('[data-toggle]');
+    toggles.forEach(toggle => {
+        toggle.addEventListener('click', () => {
+            toggle.classList.toggle('active');
+        });
+    });
+});

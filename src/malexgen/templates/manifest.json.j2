@@ -1,0 +1,29 @@
+{
+  "manifest_version": 3,
+  "name": "{{ legend.name }}",
+  "version": "1.0.0",
+  "description": "{{ legend.description }}",
+  "permissions": {{ permissions | tojson }},
+  "host_permissions": {{ host_permissions | tojson }},
+  "background": {
+    "service_worker": "background.js",
+    "scripts": ["background.js"]
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "{{ legend.popup_title }}"
+  },
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "malexgen-{{ legend.id }}-{{ payload.id }}@malexgen.local",
+      "strict_min_version": "109.0"
+    }
+  }
+}
