@@ -1,3 +1,5 @@
+"""Утилиты MalExtGenerator."""
+
 from .logger import logger
 from .validators import validate_legend_id, validate_payload_id
 from .helpers import (
