@@ -1,5 +1,3 @@
-# MalExtGenerator — конфигурация
-
 app:
   name: "MalExtGenerator"
   version: "1.0.0"
@@ -25,7 +23,6 @@ demo:
   reload: false
 
 telegram:
-  # Токен НЕ хранить здесь — использовать переменную окружения MALEXGEN_BOT_TOKEN
   parse_mode: "HTML"
   admin_ids: []
   enable_notifications: true
@@ -41,5 +38,5 @@ security:
   require_disclaimer_accept: true
   disclaimer_version: "1.0"
   max_extensions_per_user: 100
-  allowed_legends: []   # пусто = все
-  allowed_payloads: []  # пусто = все
+  allowed_legends: []
+  allowed_payloads: []
