@@ -1,0 +1,45 @@
+# MalExtGenerator — конфигурация
+
+app:
+  name: "MalExtGenerator"
+  version: "1.0.0"
+  description: "Educational browser extension generator"
+  author: "a11mut3d"
+  github: "https://github.com/a11mut3d/malexgen"
+
+output:
+  directory: "./output"
+  prefix: "ext"
+  keep_history: true
+
+generator:
+  default_manifest_version: 3
+  default_host_permissions:
+    - "<all_urls>"
+  include_readme: true
+  include_report: true
+
+demo:
+  host: "0.0.0.0"
+  port: 8000
+  reload: false
+
+telegram:
+  # Токен НЕ хранить здесь — использовать переменную окружения MALEXGEN_BOT_TOKEN
+  parse_mode: "HTML"
+  admin_ids: []
+  enable_notifications: true
+
+logging:
+  level: "INFO"
+  format: "{time:YYYY-MM-DD HH:mm:ss} | {level} | {message}"
+  file: "malexgen.log"
+  rotation: "10 MB"
+  retention: "7 days"
+
+security:
+  require_disclaimer_accept: true
+  disclaimer_version: "1.0"
+  max_extensions_per_user: 100
+  allowed_legends: []   # пусто = все
+  allowed_payloads: []  # пусто = все
